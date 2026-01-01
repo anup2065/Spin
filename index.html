@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Interactive Values Spin Wheel for exploring personal values">
+<title>Values Spin Wheel</title>
+<style>
+  :root {
+    --primary-color: #3a56e0;
+    --danger-color: #ff6b6b;
+    --success-color: #10b981;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --bg-primary: #f6f7fb;
+    --bg-card: #ffffff;
+    --border-color: #e5e7eb;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body { 
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    padding: 20px; 
+    background: var(--bg-primary); 
+    color: var(--text-primary);
+    min-height: 100vh;
+  }
+  
+  h1 { 
+    margin: 0 0 15px; 
+    font-weight: 700; 
+    font-size: 2rem;
+    text-align: center;
+    color: var(--text-primary);
+  }
+  
+  .subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 25px;
+    text-align: center;
+    max-width: 600px;
+  }
+  
+  #wheel-container { 
+    position: relative; 
+    width: 420px; 
+    height: 420px; 
+    margin: 20px 0; 
+    box-shadow: 0 6px 20px rgba(30,30,80,0.08); 
+    border-radius: 8px; 
+    background: var(--bg-card); 
+    display:flex; 
+    align-items:center; 
+    justify-content:center; 
+  }
+  
+  #wheel { 
+    width: 380px; 
+    height: 380px; 
+    border-radius: 50%; 
+    border: 6px solid #e6e9f2; 
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.04); 
+    transition: transform 0.1s linear;
+  }
+  
+  #spin-button { 
+    padding: 14px 32px; 
+    font-size: 16px; 
+    cursor: pointer; 
+    margin: 14px; 
+    border-radius: 8px; 
+    border: none; 
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+  
+  .btn { 
+    padding: 10px 16px; 
+    border-radius: 6px; 
+    border: 1px solid transparent; 
+    background: #f0f2f7; 
+    cursor: pointer; 
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  
+  .btn:hover { 
+    filter: brightness(0.95); 
+    transform: translateY(-1px);
+  }
+  
+  .btn:active {
+    transform: translateY(0);
+  }
+  
+  .btn-primary { 
+    background: linear-gradient(180deg, var(--primary-color), #2d46c9); 
+    color: #fff; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 12px rgba(58,86,224,0.25); 
+    border: none; 
+  }
+  
+  .btn-success {
+    background: var(--success-color);
+    color: #fff;
+    border: none;
+  }
+  
+  .btn:disabled { 
+    opacity: 0.6; 
+    cursor: not-allowed;
+    transform: none !important;
+  }
+  
+  .controls { 
+    display: flex; 
+    gap: 12px; 
+    align-items: center; 
+    margin-bottom: 10px; 
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  #result { 
+    margin: 12px 0 20px; 
+    font-size: 18px; 
+    font-weight: 700; 
+    color: var(--text-primary); 
+    min-height: 28px; 
+    text-align: center;
+    padding: 10px 20px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    max-width: 600px;
+    width: 100%;
+  }
+  
+  .result.small { 
+    font-size: 14px; 
+    color: var(--text-secondary); 
+  }
+  
+  #recommendation { 
+    display: none; 
+    margin-top: 20px; 
+    padding: 16px; 
+    border-radius: 8px; 
+    background: var(--bg-card); 
+    box-shadow: 0 4px 16px rgba(30,30,80,0.06); 
+    max-width: 600px;
+    width: 100%;
+  }
+  
+  #recommendation p { 
+    margin: 0 0 12px; 
+    color: var(--text-primary); 
+    line-height: 1.6;
+  }
+  
+  #copy-recommend { 
+    min-width: 120px; 
+  }
+  
+  @media (max-width: 768px) {
+    #wheel-container { 
+      width: 320px; 
+      height: 320px; 
+    } 
+    
+    #wheel { 
+      width: 280px; 
+      height: 280px; 
+    }
+    
+    .card { 
+      padding: 16px; 
+    }
+    
+    h1 {
+      font-size: 1.7rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    body {
+      padding: 15px;
+    }
+    
+    #wheel-container { 
+      width: 280px; 
+      height: 280px; 
+    } 
+    
+    #wheel { 
+      width: 240px; 
+      height: 240px; 
+      border-width: 4px;
+    }
+    
+    .controls {
+      flex-direction: column;
+      width: 100%;
+    }
+    
+    .btn {
+      width: 100%;
+      max-width: 280px;
+    }
+  }
+  
+  /* Animation for wheel spin */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+</style>
+</head>
+<body>
+
+<h1>Values Spin Wheel</h1>
+<p class="subtitle">Spin to discover personal values. Great for self-reflection and decision-making.</p>
+
+<div id="wheel-container">
+  <canvas id="wheel" width="400" height="400" aria-label="Spin wheel displaying various personal values"></canvas>
+</div>
+
+<div class="controls">
+  <button id="spin-button" class="btn btn-primary" aria-label="Spin the wheel">Spin Wheel</button>
+  <a id="google-ai-btn" class="btn" href="https://www.google.com" target="_blank" rel="noopener noreferrer" title="Open Google for research">Open Google</a>
+</div>
+
+<div id="result" class="result" aria-live="polite" aria-atomic="true"></div>
+
+<div id="recommendation" class="card" style="display:none;">
+  <p id="recommend-text" class="result small"></p>
+  <div style="display:flex; gap:10px; align-items:center; flex-wrap: wrap;">
+    <button id="copy-recommend" class="btn btn-success">Copy message</button>
+    <span id="copy-feedback" style="font-size:13px; color:var(--success-color); display:none;">✓ Copied to clipboard!</span>
+  </div>
+</div>
+
+<script>
+const values = [
+  "Discipline",
+  "Consistency",
+  "Work ethic",
+  "Focus",
+  "Obsession (controlled)",
+  "Extreme ownership",
+  "Responsibility",
+  "Strategic thinking",
+  "Long-term vision",
+  "Patience",
+  "Delayed gratification",
+  "Resilience",
+  "Mental toughness",
+  "Emotional control",
+  "Courage",
+  "Competence",
+  "Mastery",
+  "Precision",
+  "Self-control",
+  "Sacrifice",
+  "Adaptability",
+  "Problem-solving",
+  "Decision-making",
+  "Risk tolerance",
+  "Accountability",
+  "Independence",
+  "Self-reliance",
+  "Systems thinking",
+  "Efficiency",
+  "Persistence",
+  "Integrity",
+  "Honesty",
+  "Authenticity",
+  "Self-respect",
+  "Dignity",
+  "Personal standards",
+  "Moral clarity",
+  "Honor",
+  "Reliability",
+  "Loyalty",
+  "Principle over convenience",
+  "Humility",
+  "Truthfulness",
+  "Ethical restraint",
+  "Emotional awareness",
+  "Emotional regulation",
+  "Self-compassion",
+  "Self-acceptance",
+  "Inner calm",
+  "Patience with self",
+  "Psychological resilience",
+  "Emotional honesty",
+  "Vulnerability (controlled)",
+  "Stress tolerance",
+  "Acceptance of reality",
+  "Letting go",
+  "Forgiveness",
+  "Freedom from resentment",
+  "Self-trust",
+  "Mental clarity",
+  "Love (commitment)",
+  "Empathy",
+  "Compassion",
+  "Kindness",
+  "Respect for others",
+  "Listening",
+  "Understanding",
+  "Patience with people",
+  "Trustworthiness",
+  "Fairness",
+  "Cooperation",
+  "Brotherhood / camaraderie",
+  "Gratitude",
+  "Presence (in relationships)",
+  "Emotional availability",
+  "Conflict resolution",
+  "Boundaries",
+  "Commitment in love",
+  "Faithfulness",
+  "Emotional safety",
+  "Patience in love",
+  "Sacrifice for loved ones",
+  "Choosing love daily",
+  "Respecting autonomy",
+  "Healthy attachment",
+  "Communication",
+  "Emotional responsibility",
+  "Non-transactional care",
+  "Stability in relationships",
+  "Purpose",
+  "Meaning",
+  "Contribution",
+  "Service",
+  "Legacy",
+  "Alignment with values",
+  "Responsibility to something larger",
+  "Acceptance of mortality",
+  "Courage to face suffering",
+  "Willingness to endure hardship",
+  "Acceptance of impermanence",
+  "Responsibility to future generations",
+  "Stewardship",
+  "Gratitude for existence",
+  "Curiosity",
+  "Learning",
+  "Open-mindedness",
+  "Critical thinking",
+  "Intellectual honesty",
+  "Self-reflection",
+  "Willingness to change",
+  "Truth-seeking",
+  "Questioning assumptions",
+  "Creativity",
+  "Insight",
+  "Wisdom",
+  "Pattern recognition",
+  "Depth of thought",
+  "Joy",
+  "Playfulness",
+  "Wonder",
+  "Appreciation of beauty",
+  "Presence in the moment",
+  "Contentment",
+  "Balance",
+  "Celebration of progress",
+  "Humor",
+  "Lightness",
+  "Enjoyment without guilt",
+  "Peace",
+  "Love of life",
+  "Responsibility for others",
+  "Fair leadership",
+  "Protection of the weak",
+  "Justice",
+  "Courage to make hard decisions",
+  "Restraint with power",
+  "Mentorship",
+  "Example-setting",
+  "Service-oriented leadership",
+  "Vision casting",
+  "Long-term stewardship",
+  "Leverage thinking",
+  "System ownership",
+  "Capital efficiency",
+  "Time leverage",
+  "Delegation",
+  "Automation mindset",
+  "Scale orientation",
+  "Financial literacy",
+  "Cash flow awareness",
+  "Asset-first thinking",
+  "Liability avoidance",
+  "Capital allocation skill",
+  "Compounding patience",
+  "Risk-adjusted thinking",
+  "Margin of safety",
+  "Liquidity awareness",
+  "Opportunity cost thinking",
+  "Social intelligence",
+  "Status awareness",
+  "Negotiation skill",
+  "Persuasion",
+  "Framing control",
+  "Reputation management",
+  "Signal vs noise awareness",
+  "Authority projection",
+  "Strategic silence",
+  "Alliance building",
+  "Incentive understanding",
+  "Human nature realism",
+  "Second-order thinking",
+  "Asymmetric thinking",
+  "Information advantage",
+  "Timing mastery",
+  "Exit strategy thinking",
+  "Contingency planning",
+  "Process obsession",
+  "Standardization",
+  "Repeatability",
+  "Brand thinking",
+  "Customer psychology understanding",
+  "Distribution focus",
+  "Moat-building",
+  "Market timing awareness",
+  "Unit economics thinking",
+  "Execution speed",
+  "Ownership mentality",
+  "Scarcity awareness",
+  "Optionality creation",
+  "Reality-based thinking",
+  "Physical vitality",
+  "Health stewardship",
+  "Energy management",
+  "Sleep respect",
+  "Nutrition awareness",
+  "Hormonal balance awareness",
+  "Physical presence",
+  "Somatic awareness",
+  "Sexual discipline",
+  "Attraction & sexual confidence",
+  "Shadow Integration",
+  "Pragmatic Ruthlessness",
+  "Frame Control",
+  "Gravitas",
+  "Subtext Awareness",
+  "Disillusionment Resilience",
+  "Navigating Betrayal",
+  "Machiavellian Intelligence",
+  "Tactical Stealth / Deception",
+  "Social Engineering",
+  "Personal Mythology",
+  "Symbolic Intelligence",
+  "Acceptance of Chaos / Randomness",
+  "Creative Destruction",
+  "Technological Ethics",
+  "Cultural Fluidity",
+  "Paradoxical Logic",
+  "Grief Processing",
+  "Legacy Protection",
+  "Sense of Irony",
+  "Narrative Reframing",
+  "Moral Ambiguity Navigation",
+  "Adversarial Empathy",
+  "Strategic Retreat",
+  "Ego Death",
+  "Antifragility",
+  "Post-Traumatic Growth",
+  "Strategic Withdrawal / Quitting Skill",
+  "Evolutionary Psychology Literacy",
+  "Media Literacy / Deception Detection",
+  "Ecological Integration",
+  "Navigating the Absurd",
+  "Paradoxical Thinking",
+  "Nurturing / Mentorship Mastery",
+  "Serendipity Management",
+  "Narrative Sovereignty",
+  "Epistemological Humility",
+  "Dialectical Reasoning",
+  "Aesthetic Intelligence",
+  "Crisis Calm",
+  "Situational Awareness (High-Stakes)",
+  "Biological Rhythm Alignment",
+  "Transpersonal Meaning"
+];
+
+const canvas = document.getElementById("wheel");
+const ctx = canvas.getContext("2d");
+const center = canvas.width / 2;
+const radius = center - 30;
+
+function drawWheel() {
+  // Clear canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  const segmentAngle = 2 * Math.PI / values.length;
+  
+  // Draw segments
+  for (let i = 0; i < values.length; i++) {
+    ctx.beginPath();
+    ctx.moveTo(center, center);
+    ctx.arc(center, center, radius, i * segmentAngle, (i + 1) * segmentAngle);
+    
+    // Alternate colors for better visibility
+    const hue = (i * 360 / values.length) % 360;
+    const saturation = 65;
+    const lightness = i % 2 === 0 ? 65 : 75;
+    ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+    ctx.fill();
+    
+    // Draw segment border
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    
+    // Draw text
+    ctx.save();
+    ctx.translate(center, center);
+    ctx.rotate((i + 0.5) * segmentAngle);
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#1a1a1a";
+    ctx.font = "bold 9px 'Segoe UI', Arial, sans-serif";
+    
+    // Truncate long text for better fit
+    const text = values[i].length > 20 ? values[i].substring(0, 20) + "..." : values[i];
+    ctx.fillText(text, radius - 12, 4);
+    ctx.restore();
+  }
+  
+  // Draw center circle
+  ctx.beginPath();
+  ctx.arc(center, center, 15, 0, 2 * Math.PI);
+  ctx.fillStyle = "#ffffff";
+  ctx.fill();
+  ctx.strokeStyle = "#3a56e0";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  
+  // Draw pointer
+  ctx.beginPath();
+  ctx.moveTo(center, 10);
+  ctx.lineTo(center - 10, 30);
+  ctx.lineTo(center + 10, 30);
+  ctx.closePath();
+  ctx.fillStyle = "#3a56e0";
+  ctx.fill();
+  ctx.strokeStyle = "#2d46c9";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+// Initial draw
+drawWheel();
+
+let currentRotation = 0;
+let isSpinning = false;
+
+function easeOutCubic(t) { 
+  return 1 - Math.pow(1 - t, 3); 
+}
+
+function animateTo(targetDeg, duration, callback) {
+  const startTime = performance.now();
+  const startDeg = currentRotation;
+  
+  function step(currentTime) {
+    const elapsed = currentTime - startTime;
+    let progress = Math.min(elapsed / duration, 1);
+    
+    // Easing
+    progress = easeOutCubic(progress);
+    
+    const currentDeg = startDeg + (targetDeg - startDeg) * progress;
+    currentRotation = currentDeg;
+    
+    // Apply rotation
+    canvas.style.transform = `rotate(${currentDeg}deg)`;
+    
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    } else {
+      // Normalize rotation to prevent extremely large numbers
+      currentRotation = currentRotation % 360;
+      
+      // Final callback
+      if (callback && typeof callback === 'function') {
+        setTimeout(callback, 100);
+      }
+    }
+  }
+  
+  requestAnimationFrame(step);
+}
+
+// Copy recommendation message
+document.getElementById("copy-recommend").addEventListener("click", function() {
+  const text = document.getElementById("recommend-text").textContent;
+  if (!text) return;
+  
+  navigator.clipboard.writeText(text).then(() => {
+    const feedback = document.getElementById("copy-feedback");
+    feedback.style.display = 'inline';
+    
+    setTimeout(() => {
+      feedback.style.display = 'none';
+    }, 2000);
+  }).catch(() => {
+    // Fallback for browsers that don't support clipboard API
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    
+    const feedback = document.getElementById("copy-feedback");
+    feedback.style.display = 'inline';
+    feedback.textContent = "✓ Copied!";
+    
+    setTimeout(() => {
+      feedback.style.display = 'none';
+    }, 2000);
+  });
+});
+
+// Spin wheel function
+function spinWheel() {
+  if (isSpinning) return;
+  
+  isSpinning = true;
+  document.getElementById("spin-button").disabled = true;
+  document.getElementById("result").textContent = "Spinning...";
+  document.getElementById("result").classList.remove('fade-in');
+  
+  // Random selection
+  const randomIndex = Math.floor(Math.random() * values.length);
+  const segmentAngle = 360 / values.length;
+  
+  // Animation parameters
+  const spins = 5 + Math.random() * 3; // 5-8 spins
+  const targetAngle = spins * 360 + randomIndex * segmentAngle + segmentAngle / 2;
+  const duration = 3000 + Math.random() * 1000; // 3-4 seconds
+  
+  animateTo(currentRotation + targetAngle, duration, () => {
+    const value = values[randomIndex];
+    document.getElementById("result").textContent = `You got: ${value}`;
+    document.getElementById("result").classList.add('fade-in');
+
+    // Show copyable recommendation message immediately after the spin
+    const recText = `The life value is ${value}. Recommend me a movie that embodies it.`;
+    const recEl = document.getElementById("recommend-text");
+    if (recEl) {
+      recEl.textContent = recText;
+      document.getElementById("recommendation").style.display = 'block';
+      const feedback = document.getElementById("copy-feedback");
+      if (feedback) feedback.style.display = 'none';
+    }
+    
+    // Re-enable spin button
+    document.getElementById("spin-button").disabled = false;
+    isSpinning = false;
+  });
+}
+
+// Initialize
+document.getElementById("spin-button").addEventListener("click", spinWheel);
+
+// Also allow Enter key to spin when button is focused
+document.getElementById("spin-button").addEventListener("keydown", function(e) {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    spinWheel();
+  }
+});
+
+// Redraw wheel on window resize for better responsiveness
+window.addEventListener('resize', function() {
+  // Simple throttle to prevent excessive redraws
+  clearTimeout(this.resizeTimer);
+  this.resizeTimer = setTimeout(drawWheel, 100);
+});
+
+// Add loading indicator removal
+window.addEventListener('load', function() {
+  document.body.style.opacity = 1;
+});
+</script>
+
+</body>
+</html>
