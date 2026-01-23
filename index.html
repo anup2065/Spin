@@ -664,7 +664,7 @@ function spinWheel() {
     document.getElementById("result").classList.add('fade-in');
 
     // Show copyable recommendation message immediately after the spin
-    const recText = `The life value is ${value}. Recommend me a movie that embodies it.`;
+    const recText = `Best English/Hindi/Nepali movie that embodies the life value: ${value}.`;
     const recEl = document.getElementById("recommend-text");
     if (recEl) {
       recEl.textContent = recText;
@@ -704,4 +704,5 @@ window.addEventListener('load', function() {
 </script>
 
 </body>
+
 </html>
