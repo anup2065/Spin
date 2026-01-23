@@ -664,7 +664,7 @@ function spinWheel() {
     document.getElementById("result").classList.add('fade-in');
 
     // Show copyable recommendation message immediately after the spin
-    const recText = `Best English/Hindi/Nepali movie that embodies the life value: ${value}.`;
+    const recText = `From all movies where the primary language is English, Hindi, or Nepali, recommend the single best movie that most powerfully embodies the life value: ${value}. Choose only one overall best, regardless of language.`;
     const recEl = document.getElementById("recommend-text");
     if (recEl) {
       recEl.textContent = recText;
@@ -706,3 +706,4 @@ window.addEventListener('load', function() {
 </body>
 
 </html>
+
