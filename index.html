@@ -8,6 +8,7 @@
 <style>
   :root {
     --primary-color: #3a56e0;
+    --primary-hover: #2d46c9;
     --danger-color: #ff6b6b;
     --success-color: #10b981;
     --text-primary: #1f2937;
@@ -35,7 +36,7 @@
   }
   
   h1 { 
-    margin: 0 0 15px; 
+    margin: 0 0 10px; 
     font-weight: 700; 
     font-size: 2rem;
     text-align: center;
@@ -44,22 +45,24 @@
   
   .subtitle {
     color: var(--text-secondary);
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     text-align: center;
     max-width: 600px;
+    font-size: 0.95rem;
+    line-height: 1.5;
   }
   
   #wheel-container { 
     position: relative; 
     width: 420px; 
     height: 420px; 
-    margin: 20px 0; 
+    margin: 10px 0; 
     box-shadow: 0 6px 20px rgba(30,30,80,0.08); 
-    border-radius: 8px; 
+    border-radius: 50%; 
     background: var(--bg-card); 
-    display:flex; 
-    align-items:center; 
-    justify-content:center; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
   }
   
   #wheel { 
@@ -91,6 +94,9 @@
     font-size: 14px;
     font-weight: 500;
     transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .btn:hover { 
@@ -103,7 +109,7 @@
   }
   
   .btn-primary { 
-    background: linear-gradient(180deg, var(--primary-color), #2d46c9); 
+    background: linear-gradient(180deg, var(--primary-color), var(--primary-hover)); 
     color: #fff; 
     border-radius: 8px; 
     box-shadow: 0 4px 12px rgba(58,86,224,0.25); 
@@ -117,7 +123,7 @@
   }
   
   .btn:disabled { 
-    opacity: 0.6; 
+    opacity: 0.5; 
     cursor: not-allowed;
     transform: none !important;
   }
@@ -132,11 +138,14 @@
   }
   
   #result { 
-    margin: 12px 0 20px; 
+    margin: 12px 0; 
     font-size: 18px; 
     font-weight: 700; 
     color: var(--text-primary); 
-    min-height: 28px; 
+    min-height: 48px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     padding: 10px 20px;
     background: var(--bg-card);
@@ -146,30 +155,65 @@
     width: 100%;
   }
   
-  .result.small { 
-    font-size: 14px; 
-    color: var(--text-secondary); 
-  }
-  
-  #recommendation { 
-    display: none; 
+  .card { 
     margin-top: 20px; 
-    padding: 16px; 
-    border-radius: 8px; 
+    padding: 24px; 
+    border-radius: 12px; 
     background: var(--bg-card); 
     box-shadow: 0 4px 16px rgba(30,30,80,0.06); 
+    border: 1px solid var(--border-color);
     max-width: 600px;
     width: 100%;
   }
-  
-  #recommendation p { 
-    margin: 0 0 12px; 
-    color: var(--text-primary); 
-    line-height: 1.6;
+
+  .prompt-section h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--primary-color);
+  }
+
+  .prompt-section p.instructions {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  .prompt-box {
+    background: var(--bg-primary);
+    border: 1px dashed var(--border-color);
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--text-primary);
+    line-height: 1.5;
+    margin-bottom: 12px;
+    user-select: all;
+  }
+
+  .movie-input-field {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    font-family: inherit;
+    font-size: 14px;
+    margin-bottom: 12px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .movie-input-field:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(58, 86, 224, 0.15);
   }
   
-  #copy-recommend { 
-    min-width: 120px; 
+  .copy-feedback {
+    font-size: 13px;
+    color: var(--success-color);
+    font-weight: 500;
+    display: none;
   }
   
   @media (max-width: 768px) {
@@ -181,10 +225,6 @@
     #wheel { 
       width: 280px; 
       height: 280px; 
-    }
-    
-    .card { 
-      padding: 16px; 
     }
     
     h1 {
@@ -205,7 +245,6 @@
     #wheel { 
       width: 240px; 
       height: 240px; 
-      border-width: 4px;
     }
     
     .controls {
@@ -219,361 +258,217 @@
     }
   }
   
-  /* Animation for wheel spin */
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
   
   .fade-in {
-    animation: fadeIn 0.3s ease-out;
+    animation: fadeIn 0.3s ease-out forwards;
   }
 </style>
 </head>
 <body>
 
 <h1>Values Spin Wheel</h1>
-<p class="subtitle">Spin to discover personal values. Great for self-reflection and decision-making.</p>
+<p class="subtitle">Spin to select a random value, generate an AI movie discovery prompt, and search for equivalent literature.</p>
 
 <div id="wheel-container">
-  <canvas id="wheel" width="400" height="400" aria-label="Spin wheel displaying various personal values"></canvas>
+  <canvas id="wheel" aria-label="Spin wheel displaying various personal values"></canvas>
 </div>
 
 <div class="controls">
   <button id="spin-button" class="btn btn-primary" aria-label="Spin the wheel">Spin Wheel</button>
-  <a id="google-ai-btn" class="btn" href="https://claude.ai/chat/" target="_blank" rel="noopener noreferrer" title="Open Google for research">Open Claude</a>
+  <a id="claude-btn" class="btn" href="https://claude.ai/chat/" target="_blank" rel="noopener noreferrer" title="Open Claude">Open Claude</a>
 </div>
 
-<div id="result" class="result" aria-live="polite" aria-atomic="true"></div>
+<div id="result" aria-live="polite" aria-atomic="true">Your result will show here</div>
 
 <div id="recommendation" class="card" style="display:none;">
-  <p id="recommend-text" class="result small"></p>
-  <div style="display:flex; gap:10px; align-items:center; flex-wrap: wrap;">
-    <button id="copy-recommend" class="btn btn-success">Copy message</button>
-    <span id="copy-feedback" style="font-size:13px; color:var(--success-color); display:none;">✓ Copied to clipboard!</span>
+  <!-- Step 1: Movie Query -->
+  <div class="prompt-section">
+    <h3>Step 1: Ask AI for a Movie Recommendation</h3>
+    <p class="instructions">Copy this message and paste it into Claude or ChatGPT to identify a highly targeted movie:</p>
+    <div id="recommend-text" class="prompt-box"></div>
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap: wrap;">
+      <button id="copy-recommend" class="btn btn-success">Copy Prompt 1</button>
+      <span id="copy-feedback" class="copy-feedback">✓ Copied Prompt 1!</span>
+    </div>
+  </div>
+  
+  <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+  
+  <!-- Step 2: Book Query Finder -->
+  <div class="prompt-section">
+    <h3>Step 2: Find the Equivalent Book</h3>
+    <p class="instructions">Once the AI gives you a movie recommendation, type the name of that movie below to generate a follow-up book discovery prompt:</p>
+    <input type="text" id="movie-input" class="movie-input-field" placeholder="e.g., The Pursuit of Happyness">
+    <div id="book-recommend-text" class="prompt-box"></div>
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap: wrap;">
+      <button id="copy-book-recommend" class="btn btn-success" disabled>Copy Prompt 2</button>
+      <span id="copy-book-feedback" class="copy-feedback">✓ Copied Prompt 2!</span>
+    </div>
   </div>
 </div>
 
 <script>
 const values = [
-  "Discipline",
-  "Consistency",
-  "Work ethic",
-  "Focus",
-  "Obsession (controlled)",
-  "Extreme ownership",
-  "Responsibility",
-  "Strategic thinking",
-  "Long-term vision",
-  "Patience",
-  "Delayed gratification",
-  "Resilience",
-  "Mental toughness",
-  "Emotional control",
-  "Courage",
-  "Competence",
-  "Mastery",
-  "Precision",
-  "Self-control",
-  "Sacrifice",
-  "Adaptability",
-  "Problem-solving",
-  "Decision-making",
-  "Risk tolerance",
-  "Accountability",
-  "Independence",
-  "Self-reliance",
-  "Systems thinking",
-  "Efficiency",
-  "Persistence",
-  "Integrity",
-  "Honesty",
-  "Authenticity",
-  "Self-respect",
-  "Dignity",
-  "Personal standards",
-  "Moral clarity",
-  "Honor",
-  "Reliability",
-  "Loyalty",
-  "Principle over convenience",
-  "Humility",
-  "Truthfulness",
-  "Ethical restraint",
-  "Emotional awareness",
-  "Emotional regulation",
-  "Self-compassion",
-  "Self-acceptance",
-  "Inner calm",
-  "Patience with self",
-  "Psychological resilience",
-  "Emotional honesty",
-  "Vulnerability (controlled)",
-  "Stress tolerance",
-  "Acceptance of reality",
-  "Letting go",
-  "Forgiveness",
-  "Freedom from resentment",
-  "Self-trust",
-  "Mental clarity",
-  "Love (commitment)",
-  "Empathy",
-  "Compassion",
-  "Kindness",
-  "Respect for others",
-  "Listening",
-  "Understanding",
-  "Patience with people",
-  "Trustworthiness",
-  "Fairness",
-  "Cooperation",
-  "Brotherhood / camaraderie",
-  "Gratitude",
-  "Presence (in relationships)",
-  "Emotional availability",
-  "Conflict resolution",
-  "Boundaries",
-  "Commitment in love",
-  "Faithfulness",
-  "Emotional safety",
-  "Patience in love",
-  "Sacrifice for loved ones",
-  "Choosing love daily",
-  "Respecting autonomy",
-  "Healthy attachment",
-  "Communication",
-  "Emotional responsibility",
-  "Non-transactional care",
-  "Stability in relationships",
-  "Purpose",
-  "Meaning",
-  "Contribution",
-  "Service",
-  "Legacy",
-  "Alignment with values",
-  "Responsibility to something larger",
-  "Acceptance of mortality",
-  "Courage to face suffering",
-  "Willingness to endure hardship",
-  "Acceptance of impermanence",
-  "Responsibility to future generations",
-  "Stewardship",
-  "Gratitude for existence",
-  "Curiosity",
-  "Learning",
-  "Open-mindedness",
-  "Critical thinking",
-  "Intellectual honesty",
-  "Self-reflection",
-  "Willingness to change",
-  "Truth-seeking",
-  "Questioning assumptions",
-  "Creativity",
-  "Insight",
-  "Wisdom",
-  "Pattern recognition",
-  "Depth of thought",
-  "Joy",
-  "Playfulness",
-  "Wonder",
-  "Appreciation of beauty",
-  "Presence in the moment",
-  "Contentment",
-  "Balance",
-  "Celebration of progress",
-  "Humor",
-  "Lightness",
-  "Enjoyment without guilt",
-  "Peace",
-  "Love of life",
-  "Responsibility for others",
-  "Fair leadership",
-  "Protection of the weak",
-  "Justice",
-  "Courage to make hard decisions",
-  "Restraint with power",
-  "Mentorship",
-  "Example-setting",
-  "Service-oriented leadership",
-  "Vision casting",
-  "Long-term stewardship",
-  "Leverage thinking",
-  "System ownership",
-  "Capital efficiency",
-  "Time leverage",
-  "Delegation",
-  "Automation mindset",
-  "Scale orientation",
-  "Financial literacy",
-  "Cash flow awareness",
-  "Asset-first thinking",
-  "Liability avoidance",
-  "Capital allocation skill",
-  "Compounding patience",
-  "Risk-adjusted thinking",
-  "Margin of safety",
-  "Liquidity awareness",
-  "Opportunity cost thinking",
-  "Social intelligence",
-  "Status awareness",
-  "Negotiation skill",
-  "Persuasion",
-  "Framing control",
-  "Reputation management",
-  "Signal vs noise awareness",
-  "Authority projection",
-  "Strategic silence",
-  "Alliance building",
-  "Incentive understanding",
-  "Competitiveness",
-  "Articulation",
-  "Rhetorical mastery",
-  "Human nature realism",
-  "Second-order thinking",
-  "Asymmetric thinking",
-  "Information advantage",
-  "Timing mastery",
-  "Exit strategy thinking",
-  "Contingency planning",
-  "Process obsession",
-  "Standardization",
-  "Repeatability",
-  "Brand thinking",
-  "Customer psychology understanding",
-  "Distribution focus",
-  "Moat-building",
-  "Market timing awareness",
-  "Unit economics thinking",
-  "Execution speed",
-  "Ownership mentality",
-  "Scarcity awareness",
-  "Optionality creation",
-  "Reality-based thinking",
-  "Physical vitality",
-  "Health stewardship",
-  "Energy management",
-  "Sleep respect",
-  "Nutrition awareness",
-  "Hormonal balance awareness",
-  "Physical presence",
-  "Somatic awareness",
-  "Sexual discipline",
-  "Attraction & sexual confidence",
-  "Shadow Integration",
-  "Pragmatic Ruthlessness",
-  "Frame Control",
-  "Gravitas",
-  "Subtext Awareness",
-  "Disillusionment Resilience",
-  "Navigating Betrayal",
-  "Machiavellian Intelligence",
-  "Tactical Stealth / Deception",
-  "Social Engineering",
-  "Personal Mythology",
-  "Symbolic Intelligence",
-  "Acceptance of Chaos / Randomness",
-  "Creative Destruction",
-  "Technological Ethics",
-  "Cultural Fluidity",
-  "Paradoxical Logic",
-  "Grief Processing",
-  "Legacy Protection",
-  "Sense of Irony",
-  "Narrative Reframing",
-  "Moral Ambiguity Navigation",
-  "Adversarial Empathy",
-  "Strategic Retreat",
-  "Ego Death",
-  "Antifragility",
-  "Post-Traumatic Growth",
-  "Strategic Withdrawal / Quitting Skill",
-  "Evolutionary Psychology Literacy",
-  "Media Literacy / Deception Detection",
-  "Ecological Integration",
-  "Navigating the Absurd",
-  "Paradoxical Thinking",
-  "Nurturing / Mentorship Mastery",
-  "Serendipity Management",
-  "Narrative Sovereignty",
-  "Epistemological Humility",
-  "Dialectical Reasoning",
-  "Aesthetic Intelligence",
-  "Crisis Calm",
-  "Situational Awareness (High-Stakes)",
-  "Biological Rhythm Alignment",
-  "Transpersonal Meaning"
+  "Discipline", "Consistency", "Work ethic", "Focus", "Obsession (controlled)", 
+  "Extreme ownership", "Responsibility", "Strategic thinking", "Long-term vision", 
+  "Patience", "Delayed gratification", "Resilience", "Mental toughness", 
+  "Emotional control", "Courage", "Competence", "Mastery", "Precision", 
+  "Self-control", "Sacrifice", "Adaptability", "Problem-solving", "Decision-making", 
+  "Risk tolerance", "Accountability", "Independence", "Self-reliance", "Systems thinking", 
+  "Efficiency", "Persistence", "Integrity", "Honesty", "Authenticity", "Self-respect", 
+  "Dignity", "Personal standards", "Moral clarity", "Honor", "Reliability", "Loyalty", 
+  "Principle over convenience", "Humility", "Truthfulness", "Ethical restraint", 
+  "Emotional awareness", "Emotional regulation", "Self-compassion", "Self-acceptance", 
+  "Inner calm", "Patience with self", "Psychological resilience", "Emotional honesty", 
+  "Vulnerability (controlled)", "Stress tolerance", "Acceptance of reality", "Letting go", 
+  "Forgiveness", "Freedom from resentment", "Self-trust", "Mental clarity", "Love (commitment)", 
+  "Empathy", "Compassion", "Kindness", "Respect for others", "Listening", "Understanding", 
+  "Patience with people", "Trustworthiness", "Fairness", "Cooperation", 
+  "Brotherhood / camaraderie", "Gratitude", "Presence (in relationships)", "Emotional availability", 
+  "Conflict resolution", "Boundaries", "Commitment in love", "Faithfulness", "Emotional safety", 
+  "Patience in love", "Sacrifice for loved ones", "Choosing love daily", "Respecting autonomy", 
+  "Healthy attachment", "Communication", "Emotional responsibility", "Non-transactional care", 
+  "Stability in relationships", "Purpose", "Meaning", "Contribution", "Service", "Legacy", 
+  "Alignment with values", "Responsibility to something larger", "Acceptance of mortality", 
+  "Courage to face suffering", "Willingness to endure hardship", "Acceptance of impermanence", 
+  "Responsibility to future generations", "Stewardship", "Gratitude for existence", "Curiosity", 
+  "Learning", "Open-mindedness", "Critical thinking", "Intellectual honesty", "Self-reflection", 
+  "Willingness to change", "Truth-seeking", "Questioning assumptions", "Creativity", "Insight", 
+  "Wisdom", "Pattern recognition", "Depth of thought", "Joy", "Playfulness", "Wonder", 
+  "Appreciation of beauty", "Presence in the moment", "Contentment", "Balance", 
+  "Celebration of progress", "Humor", "Lightness", "Enjoyment without guilt", "Peace", 
+  "Love of life", "Responsibility for others", "Fair leadership", "Protection of the weak", 
+  "Justice", "Courage to make hard decisions", "Restraint with power", "Mentorship", 
+  "Example-setting", "Service-oriented leadership", "Vision casting", "Long-term stewardship", 
+  "Leverage thinking", "System ownership", "Capital efficiency", "Time leverage", "Delegation", 
+  "Automation mindset", "Scale orientation", "Financial literacy", "Cash flow awareness", 
+  "Asset-first thinking", "Liability avoidance", "Capital allocation skill", "Compounding patience", 
+  "Risk-adjusted thinking", "Margin of safety", "Liquidity awareness", "Opportunity cost thinking", 
+  "Social intelligence", "Status awareness", "Negotiation skill", "Persuasion", "Framing control", 
+  "Reputation management", "Signal vs noise awareness", "Authority projection", "Strategic silence", 
+  "Alliance building", "Incentive understanding", "Competitiveness", "Articulation", 
+  "Rhetorical mastery", "Human nature realism", "Second-order thinking", "Asymmetric thinking", 
+  "Information advantage", "Timing mastery", "Exit strategy thinking", "Contingency planning", 
+  "Process obsession", "Standardization", "Repeatability", "Brand thinking", 
+  "Customer psychology understanding", "Distribution focus", "Moat-building", 
+  "Market timing awareness", "Unit economics thinking", "Execution speed", "Ownership mentality", 
+  "Scarcity awareness", "Optionality creation", "Reality-based thinking", "Physical vitality", 
+  "Health stewardship", "Energy management", "Sleep respect", "Nutrition awareness", 
+  "Hormonal balance awareness", "Physical presence", "Somatic awareness", "Sexual discipline", 
+  "Attraction & sexual confidence", "Shadow Integration", "Pragmatic Ruthlessness", "Frame Control", 
+  "Gravitas", "Subtext Awareness", "Disillusionment Resilience", "Navigating Betrayal", 
+  "Machiavellian Intelligence", "Tactical Stealth / Deception", "Social Engineering", 
+  "Personal Mythology", "Symbolic Intelligence", "Acceptance of Chaos / Randomness", 
+  "Creative Destruction", "Technological Ethics", "Cultural Fluidity", "Paradoxical Logic", 
+  "Grief Processing", "Legacy Protection", "Sense of Irony", "Narrative Reframing", 
+  "Moral Ambiguity Navigation", "Adversarial Empathy", "Strategic Retreat", "Ego Death", 
+  "Antifragility", "Post-Traumatic Growth", "Strategic Withdrawal / Quitting Skill", 
+  "Evolutionary Psychology Literacy", "Media Literacy / Deception Detection", 
+  "Ecological Integration", "Navigating the Absurd", "Paradoxical Thinking", 
+  "Nurturing / Mentorship Mastery", "Serendipity Management", "Narrative Sovereignty", 
+  "Epistemological Humility", "Dialectical Reasoning", "Aesthetic Intelligence", "Crisis Calm", 
+  "Situational Awareness (High-Stakes)", "Biological Rhythm Alignment", "Transpersonal Meaning"
 ];
 
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
-const center = canvas.width / 2;
-const radius = center - 30;
+
+// Responsive configuration scaled for High-DPI screen displays
+let dpr = window.devicePixelRatio || 1;
+let width = 380;
+let height = 380;
+
+function setupCanvas() {
+  const container = document.getElementById("wheel-container");
+  const computedStyle = window.getComputedStyle(container);
+  const containerSize = parseFloat(computedStyle.width);
+  
+  // Account for border spacing
+  const canvasSize = containerSize - 40;
+  
+  canvas.style.width = `${canvasSize}px`;
+  canvas.style.height = `${canvasSize}px`;
+  
+  dpr = window.devicePixelRatio || 1;
+  canvas.width = canvasSize * dpr;
+  canvas.height = canvasSize * dpr;
+  ctx.scale(dpr, dpr);
+  
+  width = canvasSize;
+  height = canvasSize;
+}
 
 function drawWheel() {
-  // Clear canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const center = width / 2;
+  const radius = center - 10;
+  
+  ctx.clearRect(0, 0, width, height);
   
   const segmentAngle = 2 * Math.PI / values.length;
   
-  // Draw segments
+  // Draw sectors
   for (let i = 0; i < values.length; i++) {
     ctx.beginPath();
     ctx.moveTo(center, center);
     ctx.arc(center, center, radius, i * segmentAngle, (i + 1) * segmentAngle);
     
-    // Alternate colors for better visibility
+    // Generate color sequences dynamically
     const hue = (i * 360 / values.length) % 360;
-    const saturation = 65;
+    const saturation = 70;
     const lightness = i % 2 === 0 ? 65 : 75;
     ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
     ctx.fill();
     
-    // Draw segment border
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
     ctx.lineWidth = 1;
     ctx.stroke();
     
-    // Draw text
+    // Render text rotationally
     ctx.save();
     ctx.translate(center, center);
     ctx.rotate((i + 0.5) * segmentAngle);
     ctx.textAlign = "right";
-    ctx.fillStyle = "#1a1a1a";
-    ctx.font = "bold 9px 'Segoe UI', Arial, sans-serif";
+    ctx.fillStyle = "#111827";
+    ctx.font = "bold 9px 'Inter', system-ui, Arial, sans-serif";
     
-    // Truncate long text for better fit
-    const text = values[i].length > 20 ? values[i].substring(0, 20) + "..." : values[i];
-    ctx.fillText(text, radius - 12, 4);
+    const text = values[i].length > 20 ? values[i].substring(0, 18) + "..." : values[i];
+    ctx.fillText(text, radius - 12, 3);
     ctx.restore();
   }
   
-  // Draw center circle
+  // Central hub element
   ctx.beginPath();
-  ctx.arc(center, center, 15, 0, 2 * Math.PI);
+  ctx.arc(center, center, 14, 0, 2 * Math.PI);
   ctx.fillStyle = "#ffffff";
   ctx.fill();
-  ctx.strokeStyle = "#3a56e0";
-  ctx.lineWidth = 3;
+  ctx.strokeStyle = "var(--primary-color)";
+  ctx.lineWidth = 4;
   ctx.stroke();
   
-  // Draw pointer
+  // Draw indicator pointer pointing straight down at 12 o'clock
   ctx.beginPath();
-  ctx.moveTo(center, 10);
-  ctx.lineTo(center - 10, 30);
-  ctx.lineTo(center + 10, 30);
+  ctx.moveTo(center, 4);
+  ctx.lineTo(center - 12, 24);
+  ctx.lineTo(center + 12, 24);
   ctx.closePath();
-  ctx.fillStyle = "#3a56e0";
+  ctx.fillStyle = "var(--primary-color)";
   ctx.fill();
-  ctx.strokeStyle = "#2d46c9";
+  ctx.strokeStyle = "var(--primary-hover)";
   ctx.lineWidth = 2;
   ctx.stroke();
 }
 
-// Initial draw
+// Set up UI layout
+setupCanvas();
 drawWheel();
 
 let currentRotation = 0;
 let isSpinning = false;
+let selectedValueGlobal = "";
 
 function easeOutCubic(t) { 
   return 1 - Math.pow(1 - t, 3); 
@@ -587,23 +482,18 @@ function animateTo(targetDeg, duration, callback) {
     const elapsed = currentTime - startTime;
     let progress = Math.min(elapsed / duration, 1);
     
-    // Easing
     progress = easeOutCubic(progress);
     
     const currentDeg = startDeg + (targetDeg - startDeg) * progress;
     currentRotation = currentDeg;
     
-    // Apply rotation
     canvas.style.transform = `rotate(${currentDeg}deg)`;
     
     if (progress < 1) {
       requestAnimationFrame(step);
     } else {
-      // Normalize rotation to prevent extremely large numbers
       currentRotation = currentRotation % 360;
-      
-      // Final callback
-      if (callback && typeof callback === 'function') {
+      if (callback) {
         setTimeout(callback, 100);
       }
     }
@@ -612,38 +502,7 @@ function animateTo(targetDeg, duration, callback) {
   requestAnimationFrame(step);
 }
 
-// Copy recommendation message
-document.getElementById("copy-recommend").addEventListener("click", function() {
-  const text = document.getElementById("recommend-text").textContent;
-  if (!text) return;
-  
-  navigator.clipboard.writeText(text).then(() => {
-    const feedback = document.getElementById("copy-feedback");
-    feedback.style.display = 'inline';
-    
-    setTimeout(() => {
-      feedback.style.display = 'none';
-    }, 2000);
-  }).catch(() => {
-    // Fallback for browsers that don't support clipboard API
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textArea);
-    
-    const feedback = document.getElementById("copy-feedback");
-    feedback.style.display = 'inline';
-    feedback.textContent = "✓ Copied!";
-    
-    setTimeout(() => {
-      feedback.style.display = 'none';
-    }, 2000);
-  });
-});
-
-// Spin wheel function
+// Core step calculation
 function spinWheel() {
   if (isSpinning) return;
   
@@ -651,63 +510,107 @@ function spinWheel() {
   document.getElementById("spin-button").disabled = true;
   document.getElementById("result").textContent = "Spinning...";
   document.getElementById("result").classList.remove('fade-in');
+  document.getElementById("recommendation").style.display = 'none';
   
-  // Random selection
+  // Reset Input and step-2 configurations
+  document.getElementById("movie-input").value = "";
+  
   const randomIndex = Math.floor(Math.random() * values.length);
   const segmentAngle = 360 / values.length;
+  const spins = 5 + Math.random() * 3; // 5 to 8 full spins
   
-  // Animation parameters
-  const spins = 5 + Math.random() * 3; // 5-8 spins
-  const targetAngle = spins * 360 + randomIndex * segmentAngle + segmentAngle / 2;
-  const duration = 3000 + Math.random() * 1000; // 3-4 seconds
+  // Calculate target rotation degrees so that the chosen slice aligns cleanly under the pointer pointing down at 12 o'clock (270 degrees)
+  const targetAngle = (spins * 360) + (270 - (randomIndex + 0.5) * segmentAngle);
   
-  animateTo(currentRotation + targetAngle, duration, () => {
+  animateTo(currentRotation + targetAngle, 3800, () => {
     const value = values[randomIndex];
-    document.getElementById("result").textContent = `You got: ${value}`;
+    selectedValueGlobal = value;
+    document.getElementById("result").textContent = `Selected Value: ${value}`;
     document.getElementById("result").classList.add('fade-in');
 
-    // Show copyable recommendation message immediately after the spin
-    const recText = `From all movies where the primary language is English, Hindi, or Nepali, recommend the single best movie that most powerfully embodies the life value: ${value}. Choose only one overall best, regardless of language.`;
-    const recEl = document.getElementById("recommend-text");
-    if (recEl) {
-      recEl.textContent = recText;
-      document.getElementById("recommendation").style.display = 'block';
-      const feedback = document.getElementById("copy-feedback");
-      if (feedback) feedback.style.display = 'none';
-    }
+    // Build Prompt 1
+    const prompt1 = `From all movies where the primary language is English, Hindi, or Nepali, recommend the single best movie that most powerfully embodies the life value: ${value}. Choose only one overall best, regardless of language.`;
+    document.getElementById("recommend-text").textContent = prompt1;
     
-    // Re-enable spin button
+    // Build Prompt 2 Placeholder state
+    updateBookPrompt();
+    
+    document.getElementById("recommendation").style.display = 'block';
+    
+    // Clear dynamic copy notifications
+    document.getElementById("copy-feedback").style.display = 'none';
+    document.getElementById("copy-book-feedback").style.display = 'none';
+    
     document.getElementById("spin-button").disabled = false;
     isSpinning = false;
   });
 }
 
-// Initialize
-document.getElementById("spin-button").addEventListener("click", spinWheel);
+function updateBookPrompt() {
+  const movieInput = document.getElementById("movie-input");
+  const movieVal = movieInput.value.trim();
+  const displayMovieName = movieVal || "[Insert Recommended Movie Name]";
+  
+  const prompt2 = `Given the movie "${displayMovieName}", recommend the single book that is the closest equivalent to this movie in terms of its core themes, life lessons, values, philosophy, character journey, and overall essence. Choose only one overall best book.`;
+  document.getElementById("book-recommend-text").textContent = prompt2;
+  
+  // Toggle execution capability on Prompt 2 copy mechanism based on input validity
+  document.getElementById("copy-book-recommend").disabled = !movieVal;
+}
 
-// Also allow Enter key to spin when button is focused
+// Utility clip controller
+function executeClipboardCopy(elementId, feedbackId) {
+  const text = document.getElementById(elementId).textContent;
+  if (!text) return;
+  
+  navigator.clipboard.writeText(text).then(() => {
+    const feedback = document.getElementById(feedbackId);
+    feedback.style.display = 'inline';
+    setTimeout(() => { feedback.style.display = 'none'; }, 2500);
+  }).catch(() => {
+    // Fallback operational path for insecure contexts or incompatible agents
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    
+    const feedback = document.getElementById(feedbackId);
+    feedback.style.display = 'inline';
+    setTimeout(() => { feedback.style.display = 'none'; }, 2500);
+  });
+}
+
+// Event bindings
+document.getElementById("spin-button").addEventListener("click", spinWheel);
+document.getElementById("movie-input").addEventListener("input", updateBookPrompt);
+
+document.getElementById("copy-recommend").addEventListener("click", () => {
+  executeClipboardCopy("recommend-text", "copy-feedback");
+});
+
+document.getElementById("copy-book-recommend").addEventListener("click", () => {
+  executeClipboardCopy("book-recommend-text", "copy-book-feedback");
+});
+
 document.getElementById("spin-button").addEventListener("keydown", function(e) {
-  if (e.key === "Enter" || e.key === " ") {
+  if (e.key === " " || e.key === "Enter") {
     e.preventDefault();
     spinWheel();
   }
 });
 
-// Redraw wheel on window resize for better responsiveness
+// Window dimension modification handling
+let resizeTimer;
 window.addEventListener('resize', function() {
-  // Simple throttle to prevent excessive redraws
-  clearTimeout(this.resizeTimer);
-  this.resizeTimer = setTimeout(drawWheel, 100);
-});
-
-// Add loading indicator removal
-window.addEventListener('load', function() {
-  document.body.style.opacity = 1;
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    setupCanvas();
+    drawWheel();
+  }, 150);
 });
 </script>
 
 </body>
-
 </html>
-
-
